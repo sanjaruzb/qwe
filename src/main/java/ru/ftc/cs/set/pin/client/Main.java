@@ -58,6 +58,16 @@ public class Main {
                          .createJwe(producerSecretPayload)) {
 
                 sender.sendSetPin(sessionId, producerJweCompactSerialization);
+
+
+
+                System.out.println("b");
+                System.out.println(createPinSessionReq.toInsecureString());
+                System.out.println(createPinSessionRes.toInsecureString());
+                System.out.println(producerPubKey.toInsecureString());
+                System.out.println(consumerPubKey.toInsecureString());
+                System.out.println(producerJweCompactSerialization.toInsecure());
+                System.out.println("e");
             }
 
             System.out.println("client closed%n");
