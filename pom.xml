@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <organization>
+        <name>Center of Financial Technologies</name>
+    </organization>
+
+    <groupId>ru.ftc.cs</groupId>
+    <artifactId>set-pin-client</artifactId>
+    <version>1.0.4</version>
+
+    <properties>
+        <java.version>8</java.version>
+        <manifest.main.class>ru.ftc.cs.set.pin.client.Main</manifest.main.class>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm Z</maven.build.timestamp.format>
+
+        <manifest.implementation.vendor>${project.organization.name}</manifest.implementation.vendor>
+        <manifest.implementation.title>${project.name}</manifest.implementation.title>
+        <manifest.implementation.version>${project.version}</manifest.implementation.version>
+        <manifest.build.time>${maven.build.timestamp}</manifest.build.time>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.ftc.cs.cam-rs</groupId>
+            <artifactId>cam-rs-crypto-session-examples</artifactId>
+            <version>1.2.2-21.17</version>
+        </dependency>
+
+        <dependency><!-- Nonnull, Nullable annotations -->
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--NETWORK-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+    </dependencies>
+
+
+
+    <build>
+        <plugins>
+            <plugin> <!-- set MANIFEST.MF entries -->
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                            <Implementation-Version>${manifest.implementation.version}</Implementation-Version>
+                            <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                            <Build-Time>${manifest.build.time}</Build-Time>
+                            <Main-Class>${manifest.main.class}</Main-Class>
+                            <Java-Target-Version>${maven.compiler.target}</Java-Target-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin><!-- build "uber jar" - jar with all external classes -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                            <filters>
+                                <filter>
+                                    <artifact>com.fasterxml.jackson.core:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                                        <Implementation-Version>${manifest.implementation.version}</Implementation-Version>
+                                        <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                                        <Build-Time>${manifest.build.time}</Build-Time>
+                                        <Main-Class>${manifest.main.class}</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+
+                                <!-- Don't include some files from libraries -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resources>
+                                        <resource>COPYRIGHT</resource>
+                                        <resource>LICENSE</resource>
+                                        <resource>LICENSEE.asc</resource>
+                                        <resource>LICENSE.txt</resource>
+                                        <resource>NOTICE</resource>
+                                        <resource>NOTICE.txt</resource>
+                                        <resource>info.xml</resource>
+                                        <resource>jdom-info.xml</resource>
+                                        <resource>MANIFEST.MF</resource>
+                                        <resource>DEPENDENCIES</resource>
+                                    </resources>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
